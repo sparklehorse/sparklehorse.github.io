@@ -9,160 +9,104 @@ function rgb2hex(rgb)
 }
 
 
-function inverse(count)
+function inverse(index)
 {
-	color = $("#td" + count).css("background-color");
+	color = $("#td" + index).css("background-color");
 	color = rgb2hex(color);
-	if(color=="#252525")
+	if(color==bgcolor)
 	{
-		$("#td" + count).css("background-color", "#F0F0F0");
+		$("#td" + index).css({"background-image":"url(rotate.gif)","background-size:":"23px","background-position":"center","background-repeat":"no-repeat"});
+		setTimeout(function(){$("#td" + index).css({"background-color":buttoncolor,"background-image":""})}, 400);
 	}
-	else if(color=="#F0F0F0"||color=="#f0f0f0")
+	else if(color== buttoncolor)
 	{
-		$("#td" + count).css("background-color", "#252525");
+		$("#td" + index).css({"background-image":"url(rotate.gif)","background-size:":"23px","background-position":"center","background-repeat":"no-repeat"});
+		setTimeout(function(){$("#td" + index).css({"background-color":bgcolor,"background-image":""})}, 400);
 	}
 }
-function get_array()
+
+
+function display(text,width,height)
 {
-	var arr = new Array();
 	for(var i=0;i<text.length;i++)
+	{
+		do
 		{
-			if(text.slice(i, i + 1)=="\n")
+			randval = rand(width,height);
+			color = $("#td" + randval).css("background-color");
+			color = rgb2hex(color);
+			if(color == buttoncolor)
 			{
-				arr.push(i - 1);
-				text = text.slice(0, i).concat(text.slice(i + 1));
-				i--;
+				break;
 			}
 		}
-	arr.push(text.length - 1);//最后一个没有\n
-	return arr;
+		while(true);
+		
+		$("#td" + randval).text(text.slice(i, i + 1));		
+		$("#td" + randval).css("background-color", bgcolor); //wihte
+	}
 }
 
 
-function disp()
+
+
+function rand(width,height)
 {
-	$("#td" + count).text(text.slice(count, count + 1));
-	$("#td" + count).css("background-color", "#252525");
-	count++;
-	if(count==text.length)
-	{
-		$("#again").fadeIn(1500, function() {
-			$("#again").css("visibility", "visible");
-		})
-		text = bak_text;
-		clearInterval(intervalId);
-	}
+	max = width*height;
+	val = parseInt(Math.random() * max) + 1;       //eg min=1,max=4
+	return val;	
 }
 
-function display(viewed)
+
+
+
+function paint(width,height)
 {
-	var arr = get_array();
-	var count = 0;
-	$("#display").append("<table>");
-	$("table").append("<tbody>");
-	for(var i=0;i<arr.length;i++)
+	$("#display").append("<table></table>");
+	$("table").append("<tbody></tbody>");
+	for(var i=0;i<height;i++)
 	{
-		$("tbody").append('<tr id="' + i + '"></tr>');
-		if(i==0)
+		$("tbody").append('<tr id="tr' + (i + 1) + '"></tr>');		
+		for(var j=0;j<width;j++)
 		{
-			length = arr[i] + 1;
+			sum = i*width + (j + 1);
+			$("#tr" + (i + 1)).append('<td id="td' + sum + '" onclick="inverse('+ sum +')" ></td>');
+			$("#td" + sum).css("background-color", buttoncolor);
 		}
-		else
-		{
-			length = arr[i] - arr[i - 1];
-		}
-		if(length==0)// 空行
-		{
-			$("#" + i).append('<td id="td_blank"></td>');
-		}
-		else
-		{
-			for(var j=0;j<length;j++)
-			{
-				$("#" + i).append('<td id="td' + count + '" onclick="inverse('+ count +')" ></td>');
-				count++;
-			}
-		}
-	}
-	
-	if(viewed==0)
-	{
-		(function(){
-			intervalId = setInterval(function()
-			{
-				disp()
-			}, 500)
-		})();
-	}
-	else if(viewed==1)
-	{
-		for(var i=0;i<arr[arr.length-1]+1;i++)
-		{
-			disp();
-		}
-	}
-	
+	}	
 }
 
-
-function setCookie()
-{
-	document.cookie = "viewed=yes";
-}
-
-
-function getCookie()
-{
-	var cookie = document.cookie;
-	if(cookie=="")
-	{
-		return 0;
-	}
-	else
-	{
-		return 1;
-	}
-}
-
-
-function deleteCookie()
-{
-	document.cookie = "";
-}
 
 
 (function main()
 {
-	count = 0;
-	index = 0;
-	intervalId = "";
-	text = "kkkkkkkkkk\n\nadasdasd\nzxcvb\nzxc";  //length 包含\n
-	bak_text = text;
-	var viewed = getCookie();
+	bgcolor = "#ffffff";          // white; xiaoxie
+	buttoncolor = "#404040";   //like black color;
+	var width = 25;
+	var height = 16;
+	var text="我爱你";
+	
+	$(document).ready(function(){
+				paint(width,height);
+				display(text,width,height);
+			})
+		
 
+	/*
 	$.ajax({
 		type: "GET",
-		url: "A deep-sworn vow_utf8.txt",
+		url: "love_utf8.txt",
 		contentType: "text/html; charset=utf8",
 		success: function(msg){
 			text = msg;
 			bak_text = text;
 			$(document).ready(function(){
-				display(viewed);
+				display(size);
 			})
 		}			
 	})
+	*/
 
-	setCookie();
-
-	$(document).ready(function(){
-		$("#again").bind("click",function(){
-			$("#again").css("visibility", "hidden");			  
-			count = 0;
-			index = 0;
-			intervalId = "";
-			$("#display").text("");
-			display(0);
-		})
-	})
+	
+	
 })();
