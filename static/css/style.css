@@ -1,7 +1,6 @@
 body
 {
 background:#FFFFFF;    
-#F0F0F0;
 padding: 10px;
 margin:10px;
 
@@ -37,13 +36,14 @@ border: 0px;
 td
 {
 font-family:"свт╡";
-font-size:12px;     #20*19;
+font-size:12px;     /*20*19*/
+color:#404040;
 width:20px;
 height:19px;
 text-align:center;
-#background-color: #F0F0F0;             #FFFFFF;
-#background-color:#C6E2FF;
-background-color:#404040;      #black;
+/*background-color: #F0F0F0;             FFFFFF*/
+/*#background-color:#C6E2FF;          */
+background-color:#404040;      /*black*/
 cursor: pointer;
 }
 
