@@ -23,7 +23,30 @@ function rgb2hex(rgb)
 
 
 
-
+function getTime()
+{
+	//var timestamp=new Date().getTime();
+	var date = new Date();
+	var year = date.getFullYear();
+	var month = date.getMonth()+1;
+	var day = date.getDate();
+	var hour = date.getHours();
+	var minute = date.getMinutes();
+	var second = date.getSeconds();
+	//alert(year+'年'+month+'月'+day+'日 '+hour':'+minute+':'+second);
+	
+	//return string_array;
+	
+	var timeText = "Start 2016.12.24           Now"+year+"年"+month+"月"+day+"日"+hour+":"+minute+":"+second;
+	timeText = timeText.replace("\n", "&nbsp;");  ///\s/   
+	$("footer").text(timeText);
+	//$("footer").text("Start 2016.12.24           Now"+year+"年"+month+"月"+day+"日"+hour+":"+minute+":"+second);
+	if(hour==0)
+	{
+		//display weibaobao
+		//func birthday
+	}
+}
 
 
 
@@ -64,6 +87,14 @@ function rand()
 	return val;	
 }
 
+
+
+
+function birthday()
+{
+	//2017.8.10
+	//薇 宝 宝 我 爱 你
+}
 
 
 
@@ -129,7 +160,7 @@ function scanGrid(index,flag)
 			return value != index;
 		});
 	}
-	console.log(grid_array);   //console
+	//console.log(grid_array);   //console
 	var array_string = Array2String(grid_array);
 	updateGrid(array_string,index,flag);
 }
@@ -139,7 +170,7 @@ function scanGrid(index,flag)
 
 
 
-function inverse(index)
+function inverse(index)         //直接改数据库 不扫描
 {
 	color = $("#td" + index).css("background-color");
 	color = rgb2hex(color);
@@ -163,11 +194,18 @@ function paintGrid(array_string)
 	
 	
 	
+	
+	for(var i=1;i<width*height+1;i++)
+	{
+		$("#td" + i).css("background-color", bgcolor);
+	}
+	
 	for(var i=0;i<string_array.length;i++)
 	{
 		$("#td" + string_array[i]).css("background-color", buttoncolor);
 	}
-		
+	
+	
 }
 
 
@@ -178,20 +216,61 @@ function getGrid()
     var query = new Bmob.Query(Grid);
     query.get("HU3K4445", {             
       success: function(object) {
+		clearInterval(timer3);
 		var array_string = object.get("ArrayString")
 		paintGrid(array_string);				
       },
       error: function(object, error) {
         alert("query object fail");
+		
+		
+		//paint 404 notfound
       }
     });
 }
 
 
 function freshGrid()
-{
+{	
+	$("td").css("background-color", bgcolor);
+	var x=1;	//横坐标
+	var y=1;	//纵坐标
+		timer3 = setInterval(function()
+		{
+			if(x<=width*y)
+			{														//第一排
+				for(var i=x;i<=width*y;i++)
+				{
+					$("#td" + i).css("background-color", buttoncolor);
+					console.log("i="+i)
+				
+				}
+				for(var j=1+width*(y-1);j<=x;j++)	
+				{
+					$("#td" + j).css("background-color", bgcolor);
+				}
+				x++;
+				console.log("x="+x); 
+
+			}
+			else if(width*y<x<=width*height)
+			{
+				if(y<height)
+				{
+					y++;			
+				}
+				else
+				{
+					//alert("3");
+					clearInterval(timer3);
+				}
+			}						
+		},10);
+
+
 	
 }
+
 
 
 
@@ -231,9 +310,39 @@ function loadingGrid()
 	
 	
 	$(document).ready(function(){
+		
+		
+		
+				getTime();				
+				(function(){
+					timer1 = setInterval(function()
+					{
+						getTime();
+					}, 1000)     //1s fresh
+				})();
+				
+				
 				loadingGrid();
-				freshGrid();
+				
+				freshGrid();		
 				getGrid();
+				
+				(function(){
+					timer2 = setInterval(function()
+					{
+						freshGrid();
+						getGrid();//getGrid  on change then fresh
+						
+						
+						
+					}, 15000)     //5s fresh
+				})();
+				
+		
+		
+				
+				//freshGrid();
+				//getGrid();
 				//displayText(text);
 				
 			})
