@@ -7,6 +7,10 @@ function Array2String(array)
 function String2Array(string)
 {
 	var string_array = string.split(',');
+	for(var i=0;i<string_array.length;i++)
+	{
+		string_array[i] = Number(string_array[i]);
+	}
 	return string_array;
 }
 
@@ -25,7 +29,6 @@ function rgb2hex(rgb)
 
 function getTime()
 {
-	//var timestamp=new Date().getTime();
 	var date = new Date();
 	var year = date.getFullYear();
 	var month = date.getMonth()+1;
@@ -137,7 +140,7 @@ function updateGrid(array_string,index,flag)
 
 
 
-function scanGrid(index,flag)
+function scanGrid()
 {
 	var grid_array = new Array();
 	for(var i=1;i<width*height+1;i++)
@@ -147,24 +150,8 @@ function scanGrid(index,flag)
 			grid_array.push(i);
 		}
 	}
-	if(flag=="add")
-	{
-			grid_array.push(index);
-			grid_array = grid_array.sort(function(a,b){return a-b});
-	}
-	else if(flag=="del")
-	{
-		//del index of array
-		grid_array = $.grep(grid_array, function(value)
-		{
-			return value != index;
-		});
-	}
-	//console.log(grid_array);   //console
-	var array_string = Array2String(grid_array);
-	updateGrid(array_string,index,flag);
+	return grid_array;
 }
-
 
 
 
@@ -175,21 +162,33 @@ function inverse(index)         //直接改数据库 不扫描
 	color = $("#td" + index).css("background-color");
 	color = rgb2hex(color);
 	$("#td" + index).css({"background-image":"url(rotate.gif)","background-size:":"23px","background-position":"center","background-repeat":"no-repeat"});
+	var grid_array=scanGrid();
+	var flag;
 	if(color==bgcolor)//white2black
 	{
-		scanGrid(index,"add");        // add  index to array
+		// add  index to array
+		flag ="add" ;
+		grid_array.push(index);
+		grid_array = grid_array.sort(function(a,b){return a-b});	
 	}
-	else if(color== buttoncolor)//black2wihte
+	else if(color==buttoncolor)//black2wihte
 	{
-		scanGrid(index,"del");    // del index of array
+		// del index of array
+		flag="del";
+		grid_array = $.grep(grid_array, function(value)
+		{
+			return value != index;
+		});
 	}
+	var array_string = Array2String(grid_array);
+	updateGrid(array_string,index,flag);
 
 }
 
 
-function paintGrid(array_string)
+function paintGrid(string_array)
 {
-	var string_array = String2Array(array_string)
+	//var string_array = String2Array(array_string)
 	// 判断是否是数组 且符合大小
 	
 	
@@ -209,16 +208,44 @@ function paintGrid(array_string)
 }
 
 
-function getGrid()
+function getGrid(flag)
 {
 	Bmob.initialize("39e6311974b6e925bcda05142762847f", "1999dd878d6989ee2cd3fe6f5d3ceae7");		
 	var Grid = Bmob.Object.extend("Grid");
     var query = new Bmob.Query(Grid);
     query.get("HU3K4445", {             
-      success: function(object) {
-		clearInterval(timer3);
-		var array_string = object.get("ArrayString")
-		paintGrid(array_string);				
+      success: function(object) {		
+		var array_string = object.get("ArrayString");
+		var string_array =String2Array(array_string);		
+		if(flag=="change")
+		{
+			var grid_array = scanGrid();
+			if(grid_array.length==string_array.length)
+			{
+				for(var i=0;i<grid_array.length;i++)
+				{
+					if(grid_array[i]!=string_array[i])
+					{
+						freshGrid();
+						break;
+					}					
+				}
+			}
+			else
+			{
+				freshGrid();
+			}
+		}
+
+		timer4 = setInterval(function()
+		{
+			if(y>3)
+			{
+				clearInterval(timer4);
+				clearInterval(timer3);				
+				paintGrid(string_array);	
+			}			
+		}, 10)			
       },
       error: function(object, error) {
         alert("query object fail");
@@ -233,42 +260,34 @@ function getGrid()
 function freshGrid()
 {	
 	$("td").css("background-color", bgcolor);
-	var x=1;	//横坐标
-	var y=1;	//纵坐标
-		timer3 = setInterval(function()
-		{
-			if(x<=width*y)
-			{														//第一排
-				for(var i=x;i<=width*y;i++)
-				{
-					$("#td" + i).css("background-color", buttoncolor);
-					console.log("i="+i)
-				
-				}
-				for(var j=1+width*(y-1);j<=x;j++)	
-				{
-					$("#td" + j).css("background-color", bgcolor);
-				}
-				x++;
-				console.log("x="+x); 
-
-			}
-			else if(width*y<x<=width*height)
+	x=1;	//横坐标
+	y=1;	//纵坐标
+	timer3 = setInterval(function()
+	{
+		if(x<=width*y)
+		{														//第一排
+			for(var i=x;i<=width*y;i++)
 			{
-				if(y<height)
-				{
-					y++;			
-				}
-				else
-				{
-					//alert("3");
-					clearInterval(timer3);
-				}
-			}						
-		},10);
-
-
-	
+				$("#td" + i).css("background-color", buttoncolor);
+			}
+			for(var j=1+width*(y-1);j<=x;j++)	
+			{
+				$("#td" + j).css("background-color", bgcolor);
+			}
+			x++;
+		}
+		else if(width*y<x<=width*height)
+		{
+			if(y<height)
+			{
+				y++;			
+			}
+			else
+			{
+				clearInterval(timer3);
+			}
+		}						
+	},10);	
 }
 
 
@@ -298,6 +317,8 @@ function loadingGrid()
 	buttoncolor = "#404040";      //black;
 	width = 25;
 	height = 16;
+	x = 0;
+	y = 0;
 	var text="我爱你";
 	
 	
@@ -325,24 +346,15 @@ function loadingGrid()
 				loadingGrid();
 				
 				freshGrid();		
-				getGrid();
+				getGrid("init");
 				
 				(function(){
 					timer2 = setInterval(function()
 					{
-						freshGrid();
-						getGrid();//getGrid  on change then fresh
-						
-						
-						
-					}, 15000)     //5s fresh
+						getGrid("change");			
+					}, 5000)     //5s fresh
 				})();
-				
-		
-		
-				
-				//freshGrid();
-				//getGrid();
+
 				//displayText(text);
 				
 			})
