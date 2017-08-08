@@ -327,7 +327,6 @@ function listeningGrid()
 {
 	 //服务器
     BmobSocketIo.initialize("39e6311974b6e925bcda05142762847f");
-    //Bmob.initialize("e9978deb922a3ee549d8ca3266edff09", "db703f75fad13d945031b0500d366408");
 	Bmob.initialize("39e6311974b6e925bcda05142762847f", "1999dd878d6989ee2cd3fe6f5d3ceae7");
     
    //初始连接socket.io服务器后，需要监听的事件都写在这个函数内
@@ -345,11 +344,17 @@ function listeningGrid()
 	
 
       //监听服务器返回的更新表的数据
-    BmobSocketIo.onUpdateRow = function("Grid","HU3K4445",grid_array){    
+    BmobSocketIo.onUpdateRow = function(tablename,objectId,data){
+	//("Grid","HU3K4445",data){    
       //业务逻辑的代码
 	  //paintGrid();
-	  console.log("qwert"+grid_array.ArrayString);
-	  freshRows(3, grid_array.ArrayString); 
+	  if(tablename=="Grid"&&objectId=="HU3K4445")
+	  {
+		  console.log("qwert"+data.ArrayString);
+		  
+		  freshRows(3,String2Array(data.ArrayString));  /////////////////////////
+	  }
+
 	};
 
 }
@@ -492,6 +497,7 @@ function Grid()
 {
 	freshGrid();		
 	getGrid();
+	listeningGrid();
 }
 
 
@@ -544,7 +550,7 @@ function Time()
 			if(document.visibilityState=="hidden") 
 			{
 				clearInterval(timer1);
-				clearInterval(timer2);
+				//clearInterval(timer2);
 				clearInterval(timer3);
 				//clearInterval(timer4);
 			} 
