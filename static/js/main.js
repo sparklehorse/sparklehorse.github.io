@@ -90,12 +90,13 @@ function getTime(flag)
 	
 	
 	
-	if(second<10)    //  dont fresh
+	if(second<5)    //  dont fresh
 	{
 		
 		//unbind onclick function
 		
 		//freshGrid();
+		$("td").css("cursor","default"); 
 		gridStates = "MASSAGE";
 		console.log(second+"xxx");
 		freshRows(3,heart_array1);   // init states:fresh 3 rows
@@ -108,22 +109,25 @@ function getTime(flag)
 		gridStates = "FRESH";
 	}
 	*/
-	else if(second<20)
+	else if(second<10)
 	{
 		//freshGrid();
+		$("td").css("cursor","default"); 
 		gridStates = "MASSAGE";
 		console.log(second+"xxx");
 		freshRows(3,heart_array2);   // init states:fresh 3 rows
 	}
-	else if(second<30)
+	else if(second<15)
 	{
 		//freshGrid();
+		$("td").css("cursor","default"); 
 		gridStates = "MASSAGE";
 		console.log(second+"xxx");
 		freshRows(3,heart_array3);   // init states:fresh 3 rows
 	}
 	else
 	{
+		$("td").css("cursor","pointer"); 
 		gridStates = "FRESH";
 	}
 	/*
@@ -212,7 +216,7 @@ function updateGrid(array_string,index,flag)
 			{
 				$("#td" + index).css({"background-color":bgcolor,"background-image":""});
 			}
-
+			backgroundImageStates = "NULL";
 			console.log(scanGrid());          // grid data
 			
           },
@@ -246,34 +250,99 @@ function scanGrid()
 
 
 
-
-function inverse(index)         //直接改数据库 不扫描
+function inverse(index)
 {
+	if(gridStates=="MASSAGE")
+	{
+		return;	
+	}
+
 	color = $("#td" + index).css("background-color");
 	color = rgb2hex(color);
 	$("#td" + index).css({"background-image":"url(rotate.gif)","background-size:":"23px","background-position":"center","background-repeat":"no-repeat"});
-	var grid_array=scanGrid();
-	var flag;
-	if(color==bgcolor)//white2black
-	{
-		// add  index to array
-		flag ="add" ;
-		grid_array.push(index);
-		grid_array = grid_array.sort(function(a,b){return a-b});	
-	}
-	else if(color==buttoncolor)//black2wihte
-	{
-		// del index of array
-		flag="del";
-		grid_array = $.grep(grid_array, function(value)
-		{
-			return value != index;
-		});
-	}
-	var array_string = Array2String(grid_array);
-	updateGrid(array_string,index,flag);
+	backgroundImageStates = "ROTATE";
 
+	
+	Bmob.initialize("39e6311974b6e925bcda05142762847f", "1999dd878d6989ee2cd3fe6f5d3ceae7");		
+	var Grid = Bmob.Object.extend("Grid");
+    var query = new Bmob.Query(Grid);
+    query.get("HU3K4445", {             
+      success: function(results) {		
+		var array_string = results.get("ArrayString");
+		var grid_array =String2Array(array_string);
+		
+		
+		
+		var flag;
+		if(color==bgcolor&&$.inArray(index,grid_array)==(-1))//white2black
+		{
+			// add  index to array
+			flag ="add" ;
+			grid_array.push(index);
+			grid_array = grid_array.sort(function(a,b){return a-b});	
+		}
+		else if(color==buttoncolor&&$.inArray(index,grid_array)!=(-1))//black2wihte
+		{
+			// del index of array
+			flag="del";
+			grid_array = $.grep(grid_array, function(value)
+			{
+				return value != index;
+			});
+		}
+		array_string = Array2String(grid_array);
+		updateGrid(array_string,index,flag);
+      },
+      error: function(results, error) {
+        alert("query results fail");
+		
+		
+		//paint 404 notfound
+		//paintGrid(array404);	
+      }
+    });
 }
+
+
+/*
+function getGridArray()
+{
+	var string_array=[];
+	Bmob.initialize("39e6311974b6e925bcda05142762847f", "1999dd878d6989ee2cd3fe6f5d3ceae7");		
+	var Grid = Bmob.Object.extend("Grid");
+    var query = new Bmob.Query(Grid);
+    query.get("HU3K4445", {             
+      success: function(results) {		
+		var array_string = results.get("ArrayString");
+		string_array =String2Array(array_string);	
+		console.log("aaa");
+		console.log(string_array);
+		console.log("bbb");
+		console.log(array_string);
+		//return string_array;
+		
+      },
+      error: function(results, error) {
+        alert("query results fail");
+		
+		
+		//paint 404 notfound
+		//paintGrid(array404);	
+      }
+	  //return string_array;
+    }).then(function(callback){
+		console.log("aaaa"+string_array);
+		return string_array;
+		
+	});
+	//console.log("aaaa"+string_array);
+	//return string_array;
+}
+*/
+
+
+
+
 
 
 function paintGrid(string_array)
@@ -304,6 +373,21 @@ function getGrid(flag)
 	{
 		return;
 	}
+	
+	
+	for(var i=0;i<width*height;i++)
+	{
+		if(backgroundImageStates=="ROTATE")
+		{
+			//console.log($("#td"+i).css("background-image"));
+			//console.log(typeof($("#td"+i).css("background-image")));
+			break;
+			return;
+		}	
+	}
+	
+	
+	
 	
 	Bmob.initialize("39e6311974b6e925bcda05142762847f", "1999dd878d6989ee2cd3fe6f5d3ceae7");		
 	var Grid = Bmob.Object.extend("Grid");
@@ -340,7 +424,7 @@ function getGrid(flag)
 			}
 		}
 
-		freshRows(3, string_array);   // init states:fresh 3 rows
+		freshRows(3, string_array);   // init states:fresh 3 rows   then paint grid
 		
       },
       error: function(object, error) {
@@ -472,6 +556,7 @@ function Time()
 	initTime = 0;
 	gridFreshTime = 1000;
 	gridStates = "FRESH";   //FRESH   OR    MASSAGE
+	backgroundImageStates = "NULL"    // NULL    OR   ROTATE
 	var text="我爱你";
 	
 	
