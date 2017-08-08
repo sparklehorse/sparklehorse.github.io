@@ -41,6 +41,8 @@ function getTime(flag)
 	
 	//return string_array;
 	
+	
+	/*
 	if(flag=="init")
 	{
 		initTime = date.getTime();
@@ -67,6 +69,7 @@ function getTime(flag)
 			//console.log("change5000");
 		}
 	}
+	*/
 	
 	
 	
@@ -345,7 +348,7 @@ function listeningGrid()
     BmobSocketIo.onUpdateRow = function("Grid","HU3K4445",grid_array){    
       //业务逻辑的代码
 	  //paintGrid();
-	  console.log(grid_array.ArrayString);
+	  console.log("qwert"+grid_array.ArrayString);
 	  freshRows(3, grid_array.ArrayString); 
 	};
 
@@ -489,15 +492,6 @@ function Grid()
 {
 	freshGrid();		
 	getGrid();
-
-	/*
-	(function(){
-		timer2 = setInterval(function()
-		{
-			getGrid("change");			
-		}, gridFreshTime)     //5s fresh       change gridFreshTime
-	})();
-	*/
 }
 
 
