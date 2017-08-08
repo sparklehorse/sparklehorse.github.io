@@ -130,16 +130,7 @@ function getTime(flag)
 		$("td").css("cursor","pointer"); 
 		gridStates = "FRESH";
 	}
-	/*
-	else
-	{
-		timer2 = setInterval(function()
-		{
-			getGrid("change");			
-		}, gridFreshTime);
-		
-	}
-	*/
+	
 }
 
 
@@ -304,43 +295,6 @@ function inverse(index)
 }
 
 
-/*
-function getGridArray()
-{
-	var string_array=[];
-	Bmob.initialize("39e6311974b6e925bcda05142762847f", "1999dd878d6989ee2cd3fe6f5d3ceae7");		
-	var Grid = Bmob.Object.extend("Grid");
-    var query = new Bmob.Query(Grid);
-    query.get("HU3K4445", {             
-      success: function(results) {		
-		var array_string = results.get("ArrayString");
-		string_array =String2Array(array_string);	
-		console.log("aaa");
-		console.log(string_array);
-		console.log("bbb");
-		console.log(array_string);
-		//return string_array;
-		
-      },
-      error: function(results, error) {
-        alert("query results fail");
-		
-		
-		//paint 404 notfound
-		//paintGrid(array404);	
-      }
-	  //return string_array;
-    }).then(function(callback){
-		console.log("aaaa"+string_array);
-		return string_array;
-		
-	});
-	//console.log("aaaa"+string_array);
-	//return string_array;
-}
-*/
-
-
 
 
 
@@ -349,10 +303,7 @@ function paintGrid(string_array)
 {
 	//var string_array = String2Array(array_string)
 	// 判断是否是数组 且符合大小
-	
-	
-	
-	
+
 	for(var i=1;i<width*height+1;i++)
 	{
 		$("#td" + i).css("background-color", bgcolor);
@@ -367,7 +318,48 @@ function paintGrid(string_array)
 }
 
 
-function getGrid(flag)
+
+
+function listeningGrid()
+{
+	 //服务器
+    BmobSocketIo.initialize("39e6311974b6e925bcda05142762847f");
+    //Bmob.initialize("e9978deb922a3ee549d8ca3266edff09", "db703f75fad13d945031b0500d366408");
+	Bmob.initialize("39e6311974b6e925bcda05142762847f", "1999dd878d6989ee2cd3fe6f5d3ceae7");
+    
+   //初始连接socket.io服务器后，需要监听的事件都写在这个函数内
+    BmobSocketIo.onInitListen = function(){
+      //订阅GameScore表的数据更新事件
+      //BmobSocketIo.updateTable("Grid");
+	  BmobSocketIo.updateRow("Grid","HU3K4445");
+	  
+    };
+	
+	
+	//取消 BmobSocketIo.unsubUpdateRow("Grid","HU3K4445");
+	
+	
+	
+
+      //监听服务器返回的更新表的数据
+    BmobSocketIo.onUpdateRow = function("Grid","HU3K4445",grid_array){    
+      //业务逻辑的代码
+	  //paintGrid();
+	  console.log(grid_array.ArrayString);
+	  freshRows(3, grid_array.ArrayString); 
+	};
+
+}
+
+
+
+
+
+
+
+
+
+function getGrid()
 {
 	if(gridStates=="MASSAGE")
 	{
@@ -396,33 +388,7 @@ function getGrid(flag)
       success: function(object) {		
 		var array_string = object.get("ArrayString");
 		var string_array =String2Array(array_string);		
-		if(flag=="change")
-		{
-			clearInterval(timer2);
-			timer2 = setInterval(function()
-			{
-				getGrid("change");			
-			}, gridFreshTime);
-
-			
-			
-			var grid_array = scanGrid();
-			if(grid_array.length==string_array.length)      //compare local grid to sever grid
-			{												// if different then fresh grid 
-				for(var i=0;i<grid_array.length;i++)
-				{
-					if(grid_array[i]!=string_array[i])
-					{
-						freshGrid();
-						break;
-					}					
-				}
-			}
-			else
-			{
-				freshGrid();
-			}
-		}
+		
 
 		freshRows(3, string_array);   // init states:fresh 3 rows   then paint grid
 		
@@ -522,13 +488,16 @@ function loadingGrid()
 function Grid()
 {
 	freshGrid();		
-	getGrid("init");	
+	getGrid();
+
+	/*
 	(function(){
 		timer2 = setInterval(function()
 		{
 			getGrid("change");			
 		}, gridFreshTime)     //5s fresh       change gridFreshTime
 	})();
+	*/
 }
 
 
