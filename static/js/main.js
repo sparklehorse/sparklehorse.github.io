@@ -24,10 +24,16 @@ function rgb2hex(rgb)
 	return "#" + hex(rgb[1]) + hex(rgb[2]) + hex(rgb[3]);
 }
 
+function rand()
+{
+	max = width*height;
+	val = parseInt(Math.random() * max) + 1;       //eg min=1,max=4
+	return val;	
+}
 
 
 
-function getTime(flag)
+function getTime()
 {
 	
 	var date = new Date();
@@ -39,43 +45,7 @@ function getTime(flag)
 	var second = date.getSeconds();
 	//alert(year+'年'+month+'月'+day+'日 '+hour':'+minute+':'+second);
 	
-	//return string_array;
-	
-	
-	/*
-	if(flag=="init")
-	{
-		initTime = date.getTime();
-		console.log(initTime);
-	}
-	else if(flag=="timer")
-	{
-		var nowTime = date.getTime();
-		var timeSubs = parseInt((nowTime-initTime)/1000);
-		console.log(timeSubs);
-		if(timeSubs<=5)
-		{
-			gridFreshTime = 1000;
-			//console.log("change1000");
-		}
-		else if (timeSubs<=20)
-		{
-			gridFreshTime = 3000;
-			//console.log("change3000");
-		}
-		else
-		{
-			gridFreshTime = 5000;
-			//console.log("change5000");
-		}
-	}
-	*/
-	
-	
-	
-	
-	
-	
+
 	
 	
 	var timeText = "Start 2016.12.24           Now"+year+"年"+month+"月"+day+"日"+hour+":"+minute+":"+second;
@@ -93,47 +63,51 @@ function getTime(flag)
 	
 	
 	
-	if(second<5)    //  dont fresh
+	if(second<1)   												
 	{
-		
-		//unbind onclick function
-		
-		//freshGrid();
-		$("td").css("cursor","default"); 
-		gridStates = "MASSAGE";
-		console.log(second+"xxx");
-		freshRows(3,heart_array1);   // init states:fresh 3 rows
-	
-		
+		if(gridStates!="MASSAGE1")
+		{
+			//取消 BmobSocketIo.unsubUpdateRow("Grid","HU3K4445");
+			$("td").css("cursor","default"); 
+			gridStates = "MASSAGE1";
+			//console.log(second+"xxx");
+			freshGrid();   
+			freshRows(3,i_array);
+		}	
 	}
-	/*
-	else if(second=10)
+	else if(second<2)
 	{
-		gridStates = "FRESH";
+		if(gridStates!="MASSAGE2")
+		{
+			$("td").css("cursor","default"); 
+			gridStates = "MASSAGE2";
+			//console.log(second+"xxx");
+			freshGrid();
+			freshRows(3,love_array); 
+		}
 	}
-	*/
-	else if(second<10)
+	else if(second<3)
 	{
-		//freshGrid();
-		$("td").css("cursor","default"); 
-		gridStates = "MASSAGE";
-		console.log(second+"xxx");
-		freshRows(3,heart_array2);   // init states:fresh 3 rows
-	}
-	else if(second<15)
-	{
-		//freshGrid();
-		$("td").css("cursor","default"); 
-		gridStates = "MASSAGE";
-		console.log(second+"xxx");
-		freshRows(3,heart_array3);   // init states:fresh 3 rows
+		if(gridStates!="MASSAGE3")
+		{
+			$("td").css("cursor","default"); 
+			gridStates = "MASSAGE3";
+			//console.log(second+"xxx");
+			freshGrid();
+			freshRows(3,pig_array);   
+		}
 	}
 	else
 	{
-		$("td").css("cursor","pointer"); 
-		gridStates = "FRESH";
+		if(gridStates!="FRESH")
+		{
+			$("td").css("cursor","pointer"); 
+			gridStates = "FRESH";
+			//console.log(second+"xxx");
+			freshGrid();
+			getGrid();	
+		}
 	}
-	
 }
 
 
@@ -168,12 +142,7 @@ function displayText(text)
 
 
 
-function rand()
-{
-	max = width*height;
-	val = parseInt(Math.random() * max) + 1;       //eg min=1,max=4
-	return val;	
-}
+
 
 
 
@@ -202,6 +171,10 @@ function updateGrid(array_string,index,flag)
         object.set("ArrayString", array_string);
         object.save(null, {
           success: function(objectUpdate) {
+			  
+			  
+			 
+			/* 
 			if(flag=="add")
 			{
 				$("#td" + index).css({"background-color":buttoncolor,"background-image":""});
@@ -210,20 +183,42 @@ function updateGrid(array_string,index,flag)
 			{
 				$("#td" + index).css({"background-color":bgcolor,"background-image":""});
 			}
-			backgroundImageStates = "NULL";
-			console.log(scanGrid());          // grid data
+			*/
+			
+			
+			//backgroundImageStates = "NULL";
+			//inverseStates="FALSE";
+			//listeningGrid();
+			/*
+			BmobSocketIo.initialize("39e6311974b6e925bcda05142762847f");
+			Bmob.initialize("39e6311974b6e925bcda05142762847f", "1999dd878d6989ee2cd3fe6f5d3ceae7");
+			BmobSocketIo.onInitListen = function(){
+			  //订阅GameScore表的数据更新事件
+			  //BmobSocketIo.updateTable("Grid");
+			BmobSocketIo.updateRow("Grid","HU3K4445");
+			  
+			};
+			*/
+			
+			//console.log("1");
+			console.log("serverGridArray1     "+scanGrid());          // grid data
 			
           },
           error: function(model, error) {
             alert("update object fail");
           }
-        });
+        }).then(function(callback){
+				console.log("serverGridArray2     "+scanGrid()); 
+				inverseStates="FALSE";
+			});
       },
       error: function(object, error) {
         alert("query object fail");
       }
     });
+	console.log("serverGridArray3     "+scanGrid()); 
 }
+
 
 
 
@@ -246,15 +241,32 @@ function scanGrid()
 
 function inverse(index)
 {
-	if(gridStates=="MASSAGE")
+	
+	
+	//取消 
+	//BmobSocketIo.unsubUpdateRow("Grid","HU3K4445");
+	if(gridStates!="FRESH")				//MASSAGE1234
 	{
 		return;	
 	}
-
+	
+	
+	if(inverseStates=="TRUE")
+	{
+		console.log("return");
+		return;
+	}
+	
+	
+	inverseStates="TRUE";
+	$("td").css("cursor","default"); 
+	
+	
+	
 	color = $("#td" + index).css("background-color");
 	color = rgb2hex(color);
 	$("#td" + index).css({"background-image":"url(rotate.gif)","background-size:":"23px","background-position":"center","background-repeat":"no-repeat"});
-	backgroundImageStates = "ROTATE";
+	//backgroundImageStates = "ROTATE";
 
 	
 	Bmob.initialize("39e6311974b6e925bcda05142762847f", "1999dd878d6989ee2cd3fe6f5d3ceae7");		
@@ -325,36 +337,39 @@ function paintGrid(string_array)
 
 function listeningGrid()
 {
+	
+	
+		console.log("listening");
 	 //服务器
     BmobSocketIo.initialize("39e6311974b6e925bcda05142762847f");
 	Bmob.initialize("39e6311974b6e925bcda05142762847f", "1999dd878d6989ee2cd3fe6f5d3ceae7");
     
    //初始连接socket.io服务器后，需要监听的事件都写在这个函数内
-    BmobSocketIo.onInitListen = function(){
-      //订阅GameScore表的数据更新事件
-      //BmobSocketIo.updateTable("Grid");
-	  BmobSocketIo.updateRow("Grid","HU3K4445");
-	  
+    BmobSocketIo.onInitListen = function()
+	{
+		//订阅更新事件
+		BmobSocketIo.updateRow("Grid","HU3K4445");  
     };
 	
 	
-	//取消 BmobSocketIo.unsubUpdateRow("Grid","HU3K4445");
+		//取消 BmobSocketIo.unsubUpdateRow("Grid","HU3K4445");
 	
 	
 	
 
-      //监听服务器返回的更新表的数据
-    BmobSocketIo.onUpdateRow = function(tablename,objectId,data){
-	//("Grid","HU3K4445",data){    
-      //业务逻辑的代码
-	  //paintGrid();
-	  if(tablename=="Grid"&&objectId=="HU3K4445")
-	  {
-		  console.log("qwert"+data.ArrayString);
-		  
-		  freshRows(3,String2Array(data.ArrayString));  /////////////////////////
-	  }
+	//监听服务器返回的更新表的数据
+    BmobSocketIo.onUpdateRow = function(tablename,objectId,data)
+	{console.log("xxxxxxxxxxxxxxxxxxxxxxxxxxxxxx");
+		if(tablename=="Grid"&&objectId=="HU3K4445")
+		{
+			var serverGridArray = String2Array(data.ArrayString);
+			console.log("serverGridArray      "+serverGridArray);
 
+			freshRows(3,serverGridArray);  
+			$("td").css("background-image","");
+			inverseStates="FALSE";
+			$("td").css("cursor","pointer"); 	
+		}
 	};
 
 }
@@ -369,25 +384,6 @@ function listeningGrid()
 
 function getGrid()
 {
-	if(gridStates=="MASSAGE")
-	{
-		return;
-	}
-	
-	
-	for(var i=0;i<width*height;i++)
-	{
-		if(backgroundImageStates=="ROTATE")
-		{
-			//console.log($("#td"+i).css("background-image"));
-			//console.log(typeof($("#td"+i).css("background-image")));
-			break;
-			return;
-		}	
-	}
-	
-	
-	
 	
 	Bmob.initialize("39e6311974b6e925bcda05142762847f", "1999dd878d6989ee2cd3fe6f5d3ceae7");		
 	var Grid = Bmob.Object.extend("Grid");
@@ -396,10 +392,7 @@ function getGrid()
       success: function(object) {		
 		var array_string = object.get("ArrayString");
 		var string_array =String2Array(array_string);		
-		
-
-		freshRows(3, string_array);   // init states:fresh 3 rows   then paint grid
-		
+		freshRows(3, string_array);   // init states:fresh 3 rows   then paint grid		
       },
       error: function(object, error) {
         alert("query object fail");
@@ -424,8 +417,9 @@ function freshRows(num,grid_array)     // init states:fresh 3 rows
 	{
 		if(y>num)    
 		{
+			clearInterval(timer3);
 			clearInterval(timer4);
-			clearInterval(timer3);				
+							
 			paintGrid(grid_array);	
 		}			
 	}, 10);			
@@ -495,8 +489,11 @@ function loadingGrid()
 
 function Grid()
 {
-	freshGrid();		
-	getGrid();
+	if(gridStates=="FRESH")
+	{
+		freshGrid();		
+		getGrid();
+	}
 	listeningGrid();
 }
 
@@ -505,11 +502,11 @@ function Grid()
 
 function Time()
 {
-	getTime("init");				
+	getTime();				
 	(function(){
 		timer1 = setInterval(function()
 		{
-			getTime("timer");
+			getTime();
 		}, 1000)     //1s fresh
 	})();
 }
@@ -522,9 +519,8 @@ function Time()
 	height = 16;
 	x = 0;
 	y = 0;
-	initTime = 0;
-	gridFreshTime = 1000;
 	gridStates = "FRESH";   //FRESH   OR    MASSAGE
+	inverseStates = "FALSE";   //TRUE   OR  FALSE
 	backgroundImageStates = "NULL"    // NULL    OR   ROTATE
 	var text="我爱你";
 	
@@ -533,6 +529,12 @@ function Time()
 	heart_array1=[84, 85, 86, 89, 90, 91, 108, 112, 113, 117, 132, 143, 157, 168, 182, 193, 208, 217, 234, 241, 260, 265, 286, 289, 312, 313];
 	heart_array2=[85, 86, 90, 91, 109, 112, 114, 117, 133, 138, 143, 158, 168, 184, 192, 210, 216, 236, 240, 262, 264, 288];
 	heart_array3=[62, 63, 65, 66, 86, 87, 88, 89, 90, 91, 92, 111, 112, 113, 114, 115, 116, 117, 137, 138, 139, 140, 141, 163, 164, 165, 189];
+	pig_array=[106,120,209,210,211,212,213,214,215,216,217,234,242,259,262,264,267,284,292,309,310,311,312,313,314,315,316,317];
+	love_array=[13,14,15,36,37,39,59,60,62,65,85,88,91,107,108,109,110,111,112,113,114,115,116,117,118,119,132,138,144,159,160,161,162,163,164,165,166,167,187,211,212,213,214,215,235,236,240,259,262,264,288,312,314,336,340,360,366,367];
+	i_array=[36,37,40,60,61,65,67,83,84,86,90,93,111,115,132,133,134,135,136,137,138,139,140,141,142,143,144,161,165,186,187,190,210,211,215,218,234,236,240,242,258,261,266,286,290,291,311,314,317,333,336,338,342,345,359,360,368,369];
+	
+	
+	//1, 13,25,  176,200,201,225,  376,388,400,
 	array404=[];
 	
 	
@@ -550,37 +552,15 @@ function Time()
 			if(document.visibilityState=="hidden") 
 			{
 				clearInterval(timer1);
-				//clearInterval(timer2);
 				clearInterval(timer3);
 				//clearInterval(timer4);
 			} 
 			else 
 			{
 				 window.location.reload();
-				//gridFreshTime = 1000;
-				//y=0;
-				//console.log(gridFreshTime);
-				//Time();
-				//Grid();
 			}
 		});			
 	})
-		
-
-	/*
-	$.ajax({
-		type: "GET",
-		url: "love_utf8.txt",
-		contentType: "text/html; charset=utf8",
-		success: function(msg){
-			text = msg;
-			bak_text = text;
-			$(document).ready(function(){
-				display(size);
-			})
-		}			
-	})
-	*/
 
 	
 	
