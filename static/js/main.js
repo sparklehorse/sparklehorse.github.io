@@ -63,7 +63,7 @@ function getTime()
 	
 	
 	
-	if(second<1)   												
+	if(second<10)   												
 	{
 		if(gridStates!="MASSAGE1")
 		{
@@ -75,7 +75,7 @@ function getTime()
 			freshRows(3,i_array);
 		}	
 	}
-	else if(second<2)
+	else if(second<20)
 	{
 		if(gridStates!="MASSAGE2")
 		{
@@ -86,7 +86,7 @@ function getTime()
 			freshRows(3,love_array); 
 		}
 	}
-	else if(second<3)
+	else if(second<30)
 	{
 		if(gridStates!="MASSAGE3")
 		{
