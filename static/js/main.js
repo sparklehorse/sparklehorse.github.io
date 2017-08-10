@@ -45,12 +45,42 @@ function getTime()
 	var second = date.getSeconds();
 	//alert(year+'年'+month+'月'+day+'日 '+hour':'+minute+':'+second);
 	
+	
+	var month0=month;
+	var day0=day;
+	var hour0=hour;
+	var minute0=minute;
+	var second0=second;
+	
+	
+	
 
+	if(month<10)
+	{
+		month0="0"+month;
+	}
+	if(day<10)
+	{
+		day0="0"+day;
+	}
+	if(hour<10)
+	{
+		hour0="0"+hour;
+	}
+	if(minute<10)
+	{
+		minute0="0"+minute;
+	}
+	if(second<10)
+	{
+		second0="0"+second;
+	}
 	
 	
-	var timeText = "Start 2016.12.24           Now"+year+"年"+month+"月"+day+"日"+hour+":"+minute+":"+second;
-	timeText = timeText.replace("\n", "&nbsp;");  ///\s/   
-	$("footer").text(timeText);
+	//var timeText = "Start 2016.12.24           Now"+year+"年"+month+"月"+day+"日"+hour+":"+minute+":"+second;
+	//timeText = timeText.replace("\n", "&nbsp;");  ///\s/   
+	$("#Now").text("Now "+year+"."+month0+"."+day0+" "+hour0+":"+minute0+":"+second0);
+	//$("footer").text(timeText);
 	//$("footer").text("Start 2016.12.24           Now"+year+"年"+month+"月"+day+"日"+hour+":"+minute+":"+second);
 	
 	/*
