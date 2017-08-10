@@ -34,7 +34,7 @@ border: 0px;
 
 td
 {
-box-sizing: border-box;
+/*box-sizing: border-box;                      cube 20*19  */
 background-repeat: no-repeat;
 background-position: center center;
 color:#404040;
