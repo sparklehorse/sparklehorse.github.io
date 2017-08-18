@@ -93,51 +93,57 @@ function getTime()
 	
 	
 	
-	if(second<10)   												
+	if(gridStates!="NULL")
 	{
-		if(gridStates!="MASSAGE1")
+		
+	
+		if(second<10)   												
 		{
-			//取消 BmobSocketIo.unsubUpdateRow("Grid","HU3K4445");
-			$("td").css("cursor","default"); 
-			gridStates = "MASSAGE1";
-			//console.log(second+"xxx");
-			freshGrid();   
-			freshRows(3,i_array);
-		}	
-	}
-	else if(second<20)
-	{
-		if(gridStates!="MASSAGE2")
+			if(gridStates!="MASSAGE1")
+			{
+				//取消 BmobSocketIo.unsubUpdateRow("Grid","HU3K4445");
+				$("td").css("cursor","default"); 
+				gridStates = "MASSAGE1";
+				//console.log(second+"xxx");
+				freshGrid();   
+				freshRows(3,i_array);
+			}	
+		}
+		else if(second<20)
 		{
-			$("td").css("cursor","default"); 
-			gridStates = "MASSAGE2";
-			//console.log(second+"xxx");
-			freshGrid();
-			freshRows(3,love_array); 
+			if(gridStates!="MASSAGE2")
+			{
+				$("td").css("cursor","default"); 
+				gridStates = "MASSAGE2";
+				//console.log(second+"xxx");
+				freshGrid();
+				freshRows(3,love_array); 
+			}
+		}
+		else if(second<30)
+		{
+			if(gridStates!="MASSAGE3")
+			{
+				$("td").css("cursor","default"); 
+				gridStates = "MASSAGE3";
+				//console.log(second+"xxx");
+				freshGrid();
+				freshRows(3,pig_array);   
+			}
+		}
+		else
+		{
+			if(gridStates!="FRESH")
+			{
+				$("td").css("cursor","pointer"); 
+				gridStates = "FRESH";
+				//console.log(second+"xxx");
+				freshGrid();
+				getGrid();	
+			}
 		}
 	}
-	else if(second<30)
-	{
-		if(gridStates!="MASSAGE3")
-		{
-			$("td").css("cursor","default"); 
-			gridStates = "MASSAGE3";
-			//console.log(second+"xxx");
-			freshGrid();
-			freshRows(3,pig_array);   
-		}
-	}
-	else
-	{
-		if(gridStates!="FRESH")
-		{
-			$("td").css("cursor","pointer"); 
-			gridStates = "FRESH";
-			//console.log(second+"xxx");
-			freshGrid();
-			getGrid();	
-		}
-	}
+	
 }
 
 
@@ -275,7 +281,7 @@ function inverse(index)
 	
 	//取消 
 	//BmobSocketIo.unsubUpdateRow("Grid","HU3K4445");
-	if(gridStates!="FRESH")				//MASSAGE1234
+	if(gridStates!="FRESH"&&gridStates!="NULL")				//MASSAGE1234
 	{
 		return;	
 	}
@@ -519,7 +525,7 @@ function loadingGrid()
 
 function Grid()
 {
-	if(gridStates=="FRESH")
+	if(gridStates=="FRESH"||gridStates=="NULL")
 	{
 		freshGrid();		
 		getGrid();
@@ -549,7 +555,7 @@ function Time()
 	height = 16;
 	x = 0;
 	y = 0;
-	gridStates = "FRESH";   //FRESH   OR    MASSAGE
+	gridStates = "NULL";   //FRESH   OR    MASSAGE       NULL
 	inverseStates = "FALSE";   //TRUE   OR  FALSE
 	backgroundImageStates = "NULL"    // NULL    OR   ROTATE
 	var text="我爱你";
